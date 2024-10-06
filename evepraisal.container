@@ -1,0 +1,32 @@
+[Unit]
+Description=RecursiveHorizons Eveprasial
+
+[Container]
+Image=localhost/recursivehorizons-evepraisal:latest
+Volume=evepraisal:/evepraisal/db
+PublishPort=2369:8080
+PublishPort=2370:8090
+HostName=evepraisal.recursivehorizons.space
+Network=traefik.network
+ContainerName=RecursiveHorizons-Eveprasial
+Label=traefik.enable="true"
+Label=traefik.http.routers.recursivehorizons.rule=Host(`evepraisal.recursivehorizons.space`)
+Label=traefik.http.middlewares.recursivehorizons-https-redirect.redirectscheme.scheme="https"
+Label=traefik.http.routers.recursivehorizons.middlewares="recursivehorizons-https-redirect"
+Label=traefik.http.routers.recursivehorizons-secure.entrypoints="https"
+Label=traefik.http.routers.recursivehorizons-secure.rule=Host(`evepraisal.recursivehorizons.space`)
+Label=traefik.http.routers.recursivehorizons-secure.tls="true"
+Label=traefik.http.routers.recursivehorizons-secure.tls.certresolver="le"
+Label=traefik.http.routers.recursivehorizons-secure.tls.domains[0].main=evepraisal.recursivehorizons.space
+Label=traefik.http.services.recursivehorizons.loadbalancer.server.port="2369"
+Label=traefik.http.services.recursivehorizons.loadbalancer.server.port="2370"
+
+[Service]
+# Restart service
+Restart=always
+# Extend Timeout to allow time to pull the image
+TimeoutStartSec=900
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target
